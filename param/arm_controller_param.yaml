@@ -1,0 +1,11 @@
+/**:
+  ros__parameters:
+    # control parameters
+    controller_freq_hz: 50.0 # hz
+
+    max_angular_vel_rps: 0.5 # rad/s
+    max_angle_delta_rad: 0.01 # radian
+    min_angle_delta_rad: 0.001 # radian
+
+
+    # control parameters
