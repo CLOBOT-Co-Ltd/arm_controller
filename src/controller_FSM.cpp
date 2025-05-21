@@ -122,6 +122,14 @@ void ControllerFSM::initialize_FSM()
     {
       // periodic action of state
       // std::cout << "1. waiting_topics_state periodic action" << std::endl;
+
+      // for test
+      current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
+
+      for (int i = 0; i < JOINT_NUMBER; i++) {
+        std::cout << "Joint " << i << ": " << current_pos_array_[i] << std::endl;
+      }
+
       return true;
     },
 
