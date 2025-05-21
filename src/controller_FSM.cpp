@@ -227,7 +227,7 @@ void ControllerFSM::initialize_FSM()
       angle_delta_limit = std::clamp(angle_delta_limit, 0.0, max_angle_delta_rad_);
 
       for (int i = 0; i < JOINT_NUMBER; i++) {
-        joint_angles_diff[i] = init_pos_array_[i] - current_pos_array_[i];
+        joint_angles_diff[i] = wave_hand_pos_array_[i] - current_pos_array_[i];
       }
 
       for (double d: joint_angles_diff) {
@@ -247,7 +247,7 @@ void ControllerFSM::initialize_FSM()
         target_pos_array_[i] = angle_delta_per_control;
 
         std::cout << "Joint target" << i << ": " << target_pos_array_[i] << std::endl;
-        std::cout << "init pos " << i << ": " << init_pos_array_[i] * 180 / Pi <<
+        std::cout << "wave pos " << i << ": " << wave_hand_pos_array_[i] * 180 / Pi <<
           std::endl;
 
         std::cout << "current pos " << i << ": " << current_pos_array_[i] * 180 / Pi <<
@@ -276,7 +276,7 @@ void ControllerFSM::initialize_FSM()
 
 
       for (int i = 0; i < JOINT_NUMBER; i++) {
-        if (std::abs(current_pos_array_[i] - init_pos_array_[i]) > angle_tolerance_rad_) {
+        if (std::abs(current_pos_array_[i] - wave_hand_pos_array_[i]) > angle_tolerance_rad_) {
           ret = false;
           break;
         }
