@@ -44,7 +44,9 @@ class ArmControllerNode : public rclcpp::Node, public IArmController
 {
 private:
   std::atomic<bool> arm_emergency_stop_flag_ = false;
+  std::atomic<bool> arm_test_flag_ = false;
   std::atomic<bool> gesture_action_flag_ = false;
+  uint8_t gesture_type_ = 0;
 
   JOINT_INFOS arm_joint_infos_ = {0};
 
@@ -57,12 +59,17 @@ private:
   double max_angular_vel_rps_ = 0.5; // rad/sec
   double max_angle_delta_rad_ = 0.01; // radian
   double min_angle_delta_rad_ = 0.001; // radian
+
+  double angle_tolerance_rad_; // 모터 각도 허용 오차 (rad)
+
+  double weight_rate_;
   // control parameters
 
 
   rclcpp::Publisher<arm_interfaces::msg::JointInfoList>::SharedPtr pub_arm_joint_infos_;
 
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr sub_arm_emergency_stop_;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr sub_arm_test_;
 
   std::shared_ptr<rclcpp_action::ServerGoalHandle<arm_interfaces::action::Gesture>>
   action_handler_gesture_;
@@ -80,19 +87,12 @@ private:
 // FSM 가동 타이머의 실행 메소드
   void on_controller_FSM_timer_elapsed(void * nothing);
 
-// IArmController 인터페이스 구현
-  bool get_arm_emergency_stop() override;
-  JOINT_INFOS get_arm_joint_infos() override;
-  bool get_gesture_action_flag() override;
-
-  void set_arm_joint_angles(float * joint_angles_rad_cmd) override;
-
-  bool is_all_topics_ready() override;
-  void reset_topic_flags() override;
-
 // topic 콜백 함수
   void on_subscribed_arm_emergency_stop(
     const std_msgs::msg::Bool::SharedPtr arm_emergency_stop_msg);
+
+  void on_subscribed_arm_test(
+    const std_msgs::msg::Bool::SharedPtr arm_test_msg);
 
 // /gesture action 콜백 함수
   rclcpp_action::GoalResponse on_received_action_goal_gesture(
@@ -106,6 +106,22 @@ private:
   void on_received_action_accepted_gesture(
     const std::shared_ptr<rclcpp_action::ServerGoalHandle<arm_interfaces::action::Gesture>>
     action_handler_gesture);
+
+public:
+// IArmController 인터페이스 구현
+  bool get_arm_emergency_stop() override;
+  std::array<double, JOINT_NUMBER> get_arm_joint_infos() override;
+  bool get_gesture_action_flag() override;
+  uint8_t get_gesture_action_type() override;
+
+  void set_arm_motor_cmd(
+    std::array<double, JOINT_NUMBER> q, std::array<double, JOINT_NUMBER> dq,
+    std::array<double, JOINT_NUMBER> kp, std::array<double, JOINT_NUMBER> kd,
+    std::array<double, JOINT_NUMBER> tau,
+    double weight = 1.0) override;
+
+  bool is_all_topics_ready() override;
+  void reset_topic_flags() override;
 };
 
 #endif // ARM_CONTROLLER__ARM_CONTROLLER_NODE_HPP_

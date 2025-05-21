@@ -3,6 +3,9 @@
 
 #include <string>
 
+const int JOINT_NUMBER = 15; // 상부 조인트 모터 개수 (15개)
+
+
 enum JointIndex
 {
   LEFT_SHOULDER_PITCH = 0,
@@ -32,7 +35,7 @@ struct JOINT_INFOS
 //   - WaistYaw(12)
 
   int joint_number[15];
-  float joint_angle_rad[15];
+  double joint_angle_rad[15];
 };
 
 

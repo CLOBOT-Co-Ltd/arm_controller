@@ -7,5 +7,7 @@
     max_angle_delta_rad: 0.01 # radian
     min_angle_delta_rad: 0.001 # radian
 
+    angle_tolerance_rad: 0.0523599 # radian (3 deg)
 
+    weight_rate: 0.2
     # control parameters

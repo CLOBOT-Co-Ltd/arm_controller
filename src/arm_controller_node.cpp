@@ -60,12 +60,21 @@ void ArmControllerNode::initialize()
   this->declare_parameter("min_angle_delta_rad", 0.001);
   min_angle_delta_rad_ = this->get_parameter("min_angle_delta_rad").get_value<double>();
 
+  this->declare_parameter("angle_tolerance_rad", 0.0523599); // 3 deg
+  angle_tolerance_rad_ = this->get_parameter("angle_tolerance_rad").get_value<double>();
+
+  this->declare_parameter("weight_rate", 0.2);
+  weight_rate_ = this->get_parameter("weight_rate").get_value<double>();
+
+
   controller_FSM_ = std::make_shared<ControllerFSM>(
     std::shared_ptr<IArmController>(this),
     controller_freq_hz_,
     max_angular_vel_rps_,
     max_angle_delta_rad_,
-    min_angle_delta_rad_);
+    min_angle_delta_rad_,
+    angle_tolerance_rad_,
+    weight_rate_);
 
 
   controller_FSM_timer_.SetInterval_ms((1 / controller_freq_hz_) * 1000); // 20 ms
@@ -78,6 +87,10 @@ void ArmControllerNode::initialize()
   sub_arm_emergency_stop_ = create_subscription<std_msgs::msg::Bool>(
     "arm/emergency_stop", 10,
     std::bind(&ArmControllerNode::on_subscribed_arm_emergency_stop, this, std::placeholders::_1));
+
+  sub_arm_test_ = create_subscription<std_msgs::msg::Bool>(
+    "arm/test", 10,
+    std::bind(&ArmControllerNode::on_subscribed_arm_test, this, std::placeholders::_1));
 
   action_handler_gesture_ = nullptr;
 
@@ -107,11 +120,16 @@ bool ArmControllerNode::get_arm_emergency_stop()
   return arm_emergency_stop_flag_;
 }
 
-JOINT_INFOS ArmControllerNode::get_arm_joint_infos()
+std::array<double, JOINT_NUMBER> ArmControllerNode::get_arm_joint_infos()
 {
   // RCLCPP_INFO(get_logger(), "get_arm_joint_infos() called");
+  std::array<double, JOINT_NUMBER> current_pos_array;
 
-  return arm_joint_infos_;
+  for (int i = 0; i < JOINT_NUMBER; i++) {
+    current_pos_array[i] = arm_joint_infos_.joint_angle_rad[i];
+  }
+
+  return current_pos_array;
 }
 
 bool ArmControllerNode::get_gesture_action_flag()
@@ -121,7 +139,18 @@ bool ArmControllerNode::get_gesture_action_flag()
   return gesture_action_flag_;
 }
 
-void ArmControllerNode::set_arm_joint_angles(float * joint_angles_rad_cmd)
+uint8_t ArmControllerNode::get_gesture_action_type()
+{
+  // RCLCPP_INFO(get_logger(), "get_gesture_action_type() called");
+
+  return gesture_type_;
+}
+
+void ArmControllerNode::set_arm_motor_cmd(
+  std::array<double, JOINT_NUMBER> q,
+  std::array<double, JOINT_NUMBER> dq, std::array<double, JOINT_NUMBER> kp,
+  std::array<double, JOINT_NUMBER> kd, std::array<double, JOINT_NUMBER> tau,
+  double weight)
 {
   // RCLCPP_INFO(get_logger(), "set_arm_joint_angles() called");
 }
@@ -132,6 +161,10 @@ bool ArmControllerNode::is_all_topics_ready()
 
   bool ret = true;
 
+  ret &= arm_test_flag_;
+
+  arm_test_flag_ = false;
+
   return ret;
 }
 
@@ -139,8 +172,11 @@ void ArmControllerNode::reset_topic_flags()
 {
   // RCLCPP_INFO(get_logger(), "reset_topic_flags() called");
 
+  arm_test_flag_ = false;
   arm_emergency_stop_flag_ = false;
   gesture_action_flag_ = false;
+
+  gesture_type_ = 0;
 
   action_handler_gesture_ = nullptr;
 }
@@ -154,6 +190,16 @@ void ArmControllerNode::on_subscribed_arm_emergency_stop(
     arm_emergency_stop_msg->data);
 
   arm_emergency_stop_flag_ = arm_emergency_stop_msg->data;
+}
+
+void ArmControllerNode::on_subscribed_arm_test(
+  const std_msgs::msg::Bool::SharedPtr arm_test_msg)
+{
+  RCLCPP_INFO(
+    get_logger(), "Subscribed /arm/test topic: %d",
+    arm_test_msg->data);
+
+  arm_test_flag_ = arm_test_msg->data;
 }
 
 
@@ -173,6 +219,10 @@ rclcpp_action::GoalResponse ArmControllerNode::on_received_action_goal_gesture(
     return rclcpp_action::GoalResponse::REJECT;
   } else {
     RCLCPP_INFO(get_logger(), "Gesture action accepted");
+    RCLCPP_INFO(
+      get_logger(), "Gesture action type: %d", action_goal_msg->action);
+
+    gesture_type_ = action_goal_msg->action;
 
     return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
   }
