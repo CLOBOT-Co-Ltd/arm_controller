@@ -179,8 +179,8 @@ void ArmControllerNode::set_arm_motor_cmd(
     arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).kd(kd[i]);
     arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).tau(tau[i]);
 
-    std::cout << "weight: " << weight << std::endl;
-    std::cout << "joint " << i << ": " << q[i] * 180 / M_PI << std::endl;
+    // std::cout << "weight: " << weight << std::endl;
+    // std::cout << "joint " << i << ": " << q[i] * 180 / M_PI << std::endl;
   }
 
 
