@@ -21,6 +21,11 @@
 #include "arm_controller/iarm_controller.hpp"
 #include "arm_controller/controller_FSM.hpp"
 
+#include "unitree/idl/hg/LowCmd_.hpp"
+#include "unitree/idl/hg/LowState_.hpp"
+#include "unitree/robot/channel/channel_publisher.hpp"
+#include "unitree/robot/channel/channel_subscriber.hpp"
+
 #include <chrono>
 #include <iostream>
 #include <functional>
