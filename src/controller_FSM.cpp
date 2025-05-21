@@ -198,7 +198,7 @@ void ControllerFSM::initialize_FSM()
       current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
       target_pos_array_ = current_pos_array_;
 
-      weight_ = 1.0;
+      weight_ = 0.0;
     },
 
     [&]() -> bool
@@ -211,6 +211,10 @@ void ControllerFSM::initialize_FSM()
       double angle_delta_per_control;
 
       double angle_delta_limit = max_angular_vel_rps_ * controller_freq_sec_;
+
+      double delta_weight = weight_rate_ * controller_freq_sec_;
+      weight_ += delta_weight;
+      weight_ = std::clamp(weight_, 0.0, 1.0);
 
       current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
 
@@ -236,6 +240,10 @@ void ControllerFSM::initialize_FSM()
         // SIGN(angle_delta_per_control) * min_angle_delta_rad_;
 
         target_pos_array_[i] = current_pos_array_[i] + angle_delta_per_control;
+
+        // std::cout << "Joint target" << i << ": " << target_pos_array_[i] << std::endl;
+        std::cout << "wave hand pos " << i << ": " << wave_hand_pos_array_[i] * 180 / Pi <<
+          std::endl;
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -286,7 +294,7 @@ void ControllerFSM::initialize_FSM()
 
       wave_hand_phase_ = 0;
 
-      weight_ = 1.0;
+      weight_ = 0.0;
     },
 
     [&]() -> bool
@@ -298,6 +306,10 @@ void ControllerFSM::initialize_FSM()
       double phase = wave_hand_phase_ / wave_hand_phase_limit_;
 
       double angle_delta_limit = max_angular_vel_rps_ * controller_freq_sec_;
+
+      double delta_weight = weight_rate_ * controller_freq_sec_;
+      weight_ += delta_weight;
+      weight_ = std::clamp(weight_, 0.0, 1.0);
 
       current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
 
@@ -360,7 +372,7 @@ void ControllerFSM::initialize_FSM()
       current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
       target_pos_array_ = current_pos_array_;
 
-      weight_ = 1.0;
+      weight_ = 0.0;
     },
 
     [&]() -> bool
@@ -373,6 +385,10 @@ void ControllerFSM::initialize_FSM()
       double angle_delta_per_control;
 
       double angle_delta_limit = max_angular_vel_rps_ * controller_freq_sec_;
+
+      double delta_weight = weight_rate_ * controller_freq_sec_;
+      weight_ += delta_weight;
+      weight_ = std::clamp(weight_, 0.0, 1.0);
 
       current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
 
@@ -411,7 +427,7 @@ void ControllerFSM::initialize_FSM()
     [&]() -> bool
     {
       // condition of state finish
-      // std::cout << "3. gesture_action_state finish condition check" << std::endl;
+      // std::cout << "3_3. wave_hand_state_3 finish condition check" << std::endl;
 
       bool ret = true;
 

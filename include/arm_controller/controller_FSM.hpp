@@ -35,7 +35,7 @@ private:
   double angle_tolerance_rad_; // 모터 각도 허용 오차 (rad)
 
   double weight_rate_;
-  double weight_ = 1.0;
+  double weight_ = 0.0;
 // control parameters
 
   std::array<double, JOINT_NUMBER> current_pos_array_ = {0};
