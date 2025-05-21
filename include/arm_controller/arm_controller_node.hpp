@@ -71,6 +71,12 @@ private:
   // control parameters
 
 
+  unitree::robot::ChannelPublisherPtr<unitree_hg::msg::dds_::LowCmd_>
+  arm_sdk_publisher_;
+
+  unitree::robot::ChannelSubscriberPtr<unitree_hg::msg::dds_::LowState_>
+  low_state_subscriber_;
+
   rclcpp::Publisher<arm_interfaces::msg::JointInfoList>::SharedPtr pub_arm_joint_infos_;
 
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr sub_arm_emergency_stop_;
@@ -82,15 +88,18 @@ private:
   rclcpp_action::Server<arm_interfaces::action::Gesture>::SharedPtr action_server_gesture_;
 
 public:
-  ArmControllerNode();
+  ArmControllerNode(char * networkInterface);
 // ~ArmControllerNode();
 
 private:
 // 각 필드 값 초기화
-  void initialize();
+  void initialize(char * networkInterface);
 
 // FSM 가동 타이머의 실행 메소드
   void on_controller_FSM_timer_elapsed(void * nothing);
+
+// unitree dds 토픽 콜백 함수
+  void on_dds_subscribed_rt_lowstate(const void * rt_lowstate_msg);
 
 // topic 콜백 함수
   void on_subscribed_arm_emergency_stop(

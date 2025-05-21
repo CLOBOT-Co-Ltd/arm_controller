@@ -15,7 +15,7 @@
 #include "arm_controller/arm_controller_node.hpp"
 
 
-ArmControllerNode::ArmControllerNode()
+ArmControllerNode::ArmControllerNode(char * networkInterface)
 : Node("arm_controller_node")
   , controller_FSM_timer_(
     std::bind(&ArmControllerNode::on_controller_FSM_timer_elapsed, this, std::placeholders::_1),
@@ -27,9 +27,21 @@ ArmControllerNode::ArmControllerNode()
 // ArmControllerNode::~ArmControllerNode()
 
 
-void ArmControllerNode::initialize()
+void ArmControllerNode::initialize(char * networkInterface)
 {
   RCLCPP_INFO(get_logger(), "ArmControllerNode initialize called");
+
+  unitree::robot::ChannelFactory::Instance()->Init(0, networkInterface);
+  arm_sdk_publisher_.reset(
+    new unitree::robot::ChannelPublisher<unitree_hg::msg::dds_::LowCmd_>(
+      "rt/arm_sdk"));
+  arm_sdk_publisher_->InitChannel();
+
+  low_state_subscriber_.reset(
+    new unitree::robot::ChannelSubscriber<unitree_hg::msg::dds_::LowState_>(
+      "rt/lowstate"));
+
+  low_state_subscriber_->InitChannel(&ArmControllerNode::on_dds_subscribed_rt_lowstate, 1);
 
   arm_joint_infos_.joint_number[LEFT_SHOULDER_PITCH] = 13;
   arm_joint_infos_.joint_number[LEFT_SHOULDER_ROLL] = 14;
@@ -153,6 +165,19 @@ void ArmControllerNode::set_arm_motor_cmd(
   double weight)
 {
   // RCLCPP_INFO(get_logger(), "set_arm_joint_angles() called");
+
+  unitree_hg::msg::dds_::LowCmd_ arm_cmd_msg;
+  arm_cmd_msg.motor_cmd().at(27).q(weight);
+
+  for (int i = 0; i < JOINT_NUMBER; i++) {
+    arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).q(q[i]);
+    arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).dq(dq[i]);
+    arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).kp(kp[i]);
+    arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).kd(kd[i]);
+    arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).tau(tau[i]);
+  }
+
+  arm_sdk_publisher_->Write(arm_cmd_msg);
 }
 
 bool ArmControllerNode::is_all_topics_ready()
@@ -179,6 +204,20 @@ void ArmControllerNode::reset_topic_flags()
   gesture_type_ = 0;
 
   action_handler_gesture_ = nullptr;
+}
+
+// unitree dds 토픽 콜백 함수
+void ArmControllerNode::on_dds_subscribed_rt_lowstate(const void * rt_lowstate_msg)
+{
+  auto type_casting = (const unitree_hg::msg::dds_::LowState_ *) rt_lowstate_msg;
+  unitree_hg::msg::dds_::LowState_ state_msg;
+
+  memcpy(&state_msg, type_casting, sizeof(unitree_hg::msg::dds_::LowState_));
+
+  for (int i = 0; i < JOINT_NUMBER; i++) {
+    arm_joint_infos_.joint_angle_rad[i] =
+      state_msg.motor_state().at(arm_joint_infos_.joint_number[i]).q();
+  }
 }
 
 
