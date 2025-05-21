@@ -31,7 +31,7 @@ int main(int argc, char * argv[])
 
   rclcpp::executors::MultiThreadedExecutor executor;
 
-  auto node = std::make_shared<ArmControllerNode>();
+  auto node = std::make_shared<ArmControllerNode>(argv[1]);
 
   executor.add_node(node);
   executor.spin();
