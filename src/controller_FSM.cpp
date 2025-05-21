@@ -126,9 +126,9 @@ void ControllerFSM::initialize_FSM()
       // for test
       current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
 
-      for (int i = 0; i < JOINT_NUMBER; i++) {
-        std::cout << "Joint " << i << ": " << current_pos_array_[i] << std::endl;
-      }
+      // for (int i = 0; i < JOINT_NUMBER; i++) {
+      //   std::cout << "Joint " << i << ": " << current_pos_array_[i] << std::endl;
+      // }
 
       return true;
     },
@@ -242,8 +242,8 @@ void ControllerFSM::initialize_FSM()
         target_pos_array_[i] = current_pos_array_[i] + angle_delta_per_control;
 
         // std::cout << "Joint target" << i << ": " << target_pos_array_[i] << std::endl;
-        std::cout << "wave hand pos " << i << ": " << wave_hand_pos_array_[i] * 180 / Pi <<
-          std::endl;
+        // std::cout << "wave hand pos " << i << ": " << wave_hand_pos_array_[i] * 180 / Pi <<
+        //   std::endl;
       }
 
       arm_controller_node_->set_arm_motor_cmd(
