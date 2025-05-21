@@ -22,7 +22,7 @@ ArmControllerNode::ArmControllerNode(char * networkInterface)
     (1 / controller_freq_hz_) * 1000) // 20 ms
 {
   RCLCPP_INFO(get_logger(), "ArmControllerNode constructor called");
-  initialize();
+  initialize(networkInterface);
 }
 // ArmControllerNode::~ArmControllerNode()
 
@@ -41,7 +41,10 @@ void ArmControllerNode::initialize(char * networkInterface)
     new unitree::robot::ChannelSubscriber<unitree_hg::msg::dds_::LowState_>(
       "rt/lowstate"));
 
-  low_state_subscriber_->InitChannel(&ArmControllerNode::on_dds_subscribed_rt_lowstate, 1);
+  low_state_subscriber_->InitChannel(
+    std::bind(
+      &ArmControllerNode::on_dds_subscribed_rt_lowstate, this,
+      std::placeholders::_1), 1);
 
   arm_joint_infos_.joint_number[LEFT_SHOULDER_PITCH] = 13;
   arm_joint_infos_.joint_number[LEFT_SHOULDER_ROLL] = 14;
