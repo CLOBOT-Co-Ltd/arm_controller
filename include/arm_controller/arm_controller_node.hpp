@@ -88,12 +88,12 @@ private:
   rclcpp_action::Server<arm_interfaces::action::Gesture>::SharedPtr action_server_gesture_;
 
 public:
-  ArmControllerNode(char * networkInterface);
+  ArmControllerNode(const char * networkInterface);
 // ~ArmControllerNode();
 
 private:
 // 각 필드 값 초기화
-  void initialize(char * networkInterface);
+  void initialize(const char * networkInterface);
 
 // FSM 가동 타이머의 실행 메소드
   void on_controller_FSM_timer_elapsed(void * nothing);

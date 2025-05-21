@@ -15,7 +15,7 @@
 #include "arm_controller/arm_controller_node.hpp"
 
 
-ArmControllerNode::ArmControllerNode(char * networkInterface)
+ArmControllerNode::ArmControllerNode(const char * networkInterface)
 : Node("arm_controller_node")
   , controller_FSM_timer_(
     std::bind(&ArmControllerNode::on_controller_FSM_timer_elapsed, this, std::placeholders::_1),
@@ -27,7 +27,7 @@ ArmControllerNode::ArmControllerNode(char * networkInterface)
 // ArmControllerNode::~ArmControllerNode()
 
 
-void ArmControllerNode::initialize(char * networkInterface)
+void ArmControllerNode::initialize(const char * networkInterface)
 {
   RCLCPP_INFO(get_logger(), "ArmControllerNode initialize called");
 
