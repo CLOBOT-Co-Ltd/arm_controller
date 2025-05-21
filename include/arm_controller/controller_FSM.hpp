@@ -41,20 +41,20 @@ private:
   std::array<double, JOINT_NUMBER> current_pos_array_ = {0};
   std::array<double, JOINT_NUMBER> target_pos_array_ = {0};
 
-  // std::array<double, JOINT_NUMBER> joint_kp_array_ = {120, 120, 80, 50, 50, 50, 50,
-  //   120, 120, 80, 50, 50, 50, 50,
-  //   200};
-  // std::array<double, JOINT_NUMBER> joint_kd_array_ = {2.0, 2.0, 1.5, 1.0, 1.0, 1.0, 1.0,
-  //   2.0, 2.0, 1.5, 1.0, 1.0, 1.0, 1.0,
-  //   2.0};
+  std::array<double, JOINT_NUMBER> joint_kp_array_ = {120, 120, 80, 50, 50, 50, 50,
+    120, 120, 80, 50, 50, 50, 50,
+    200};
+  std::array<double, JOINT_NUMBER> joint_kd_array_ = {2.0, 2.0, 1.5, 1.0, 1.0, 1.0, 1.0,
+    2.0, 2.0, 1.5, 1.0, 1.0, 1.0, 1.0,
+    2.0};
 
 
-  std::array<double, JOINT_NUMBER> joint_kp_array_ = {10, 10, 10, 10, 10, 10, 10,
-    10, 10, 10, 10, 10, 10, 10,
-    10};
-  std::array<double, JOINT_NUMBER> joint_kd_array_ = {10, 10, 10, 10, 10, 10, 10,
-    10, 10, 10, 10, 10, 10, 10,
-    10};
+  // std::array<double, JOINT_NUMBER> joint_kp_array_ = {10, 10, 10, 10, 10, 10, 10,
+  //   10, 10, 10, 10, 10, 10, 10,
+  //   10};
+  // std::array<double, JOINT_NUMBER> joint_kd_array_ = {10, 10, 10, 10, 10, 10, 10,
+  //   10, 10, 10, 10, 10, 10, 10,
+  //   10};
 
   std::array<double, JOINT_NUMBER> init_pos_array_ = {0.f, 0.3, 0.f, 0, 0, 0, 0,
     0.f, -0.3, 0.f, 0, 0, 0, 0,
