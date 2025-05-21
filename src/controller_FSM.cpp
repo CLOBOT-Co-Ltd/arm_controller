@@ -263,6 +263,8 @@ void ControllerFSM::initialize_FSM()
         target_pos_array_, std::array<double, JOINT_NUMBER>{0.0f}, joint_kp_array_,
         joint_kd_array_, std::array<double, JOINT_NUMBER>{0.0f}, weight_);
 
+      std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(0.02 / 0.001f)));
+
 
       return true;
     },
