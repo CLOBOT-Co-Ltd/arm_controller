@@ -244,19 +244,19 @@ void ControllerFSM::initialize_FSM()
         // angle_delta_per_control :
         // SIGN(angle_delta_per_control) * min_angle_delta_rad_;
 
-        target_pos_array_[i] = angle_delta_per_control;
+        target_pos_array_[i] += angle_delta_per_control;
 
-        std::cout << "Joint target" << i << ": " << target_pos_array_[i] << std::endl;
-        std::cout << "wave pos " << i << ": " << wave_hand_pos_array_[i] * 180 / Pi <<
-          std::endl;
+        // std::cout << "Joint target" << i << ": " << target_pos_array_[i] << std::endl;
+        // std::cout << "wave pos " << i << ": " << wave_hand_pos_array_[i] * 180 / Pi <<
+        //   std::endl;
 
-        std::cout << "current pos " << i << ": " << current_pos_array_[i] * 180 / Pi <<
-          std::endl;
-        std::cout << "angle delta per control " << i << ": " <<
-          angle_delta_per_control * 180 / Pi <<
-          std::endl;
-        std::cout << "target pos " << i << ": " << target_pos_array_[i] * 180 / Pi <<
-          std::endl;
+        // std::cout << "current pos " << i << ": " << current_pos_array_[i] * 180 / Pi <<
+        //   std::endl;
+        // std::cout << "angle delta per control " << i << ": " <<
+        //   angle_delta_per_control * 180 / Pi <<
+        //   std::endl;
+        // std::cout << "target pos " << i << ": " << target_pos_array_[i] * 180 / Pi <<
+        //   std::endl;
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -342,7 +342,7 @@ void ControllerFSM::initialize_FSM()
         // angle_delta_per_control :
         // SIGN(angle_delta_per_control) * min_angle_delta_rad_;
 
-        target_pos_array_[i] = angle_delta_per_control;
+        target_pos_array_[i] += angle_delta_per_control;
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -428,7 +428,7 @@ void ControllerFSM::initialize_FSM()
         // angle_delta_per_control :
         // SIGN(angle_delta_per_control) * min_angle_delta_rad_;
 
-        target_pos_array_[i] = angle_delta_per_control;
+        target_pos_array_[i] += angle_delta_per_control;
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -476,12 +476,25 @@ void ControllerFSM::initialize_FSM()
     {
       // initial execution of state
       std::cout << "99. emergency_stop_state initialize" << std::endl;
+
+      stop_control_phase_ = 0;
+      weight_ = 1.0;
     },
 
     [&]() -> bool
     {
       // periodic action of state
       // std::cout << "99. emergency_stop_state periodic action" << std::endl;
+
+      double delta_weight = weight_rate_ * controller_freq_sec_;
+      weight_ -= delta_weight;
+      weight_ = std::clamp(weight_, 0.0, 1.0);
+
+      arm_controller_node_->set_arm_motor_cmd(
+        std::array<double, JOINT_NUMBER>{0.0f}, std::array<double, JOINT_NUMBER>{0.0f},
+        std::array<double, JOINT_NUMBER>{0.0f}, std::array<double, JOINT_NUMBER>{0.0f},
+        std::array<double, JOINT_NUMBER>{0.0f}, weight_);
+
       return true;
     },
 
@@ -490,7 +503,12 @@ void ControllerFSM::initialize_FSM()
       // condition of state finish
       // std::cout << "99. emergency_stop_state finish condition check" << std::endl;
 
-      return true;
+      if (stop_control_phase_ >= stop_control_phase_limit_) {
+        return true;
+      } else {
+        stop_control_phase_++;
+        return false;
+      }
     });
 
   // 100. finish_state
@@ -509,24 +527,12 @@ void ControllerFSM::initialize_FSM()
       std::cout << "100. finish_state initialize" << std::endl;
 
       arm_controller_node_->reset_topic_flags();
-      stop_control_phase_ = 0;
-
-      weight_ = 1.0;
     },
 
     [&]() -> bool
     {
       // periodic action of state
       // std::cout << "100. finish_state periodic action" << std::endl;
-
-      double delta_weight = weight_rate_ * controller_freq_sec_;
-      weight_ -= delta_weight;
-      weight_ = std::clamp(weight_, 0.0, 1.0);
-
-      arm_controller_node_->set_arm_motor_cmd(
-        std::array<double, JOINT_NUMBER>{0.0f}, std::array<double, JOINT_NUMBER>{0.0f},
-        std::array<double, JOINT_NUMBER>{0.0f}, std::array<double, JOINT_NUMBER>{0.0f},
-        std::array<double, JOINT_NUMBER>{0.0f}, weight_);
 
       return true;
     },
@@ -536,12 +542,7 @@ void ControllerFSM::initialize_FSM()
       // condition of state finish
       // std::cout << "100. finish_state finish condition check" << std::endl;
 
-      if (stop_control_phase_ >= stop_control_phase_limit_) {
-        return true;
-      } else {
-        stop_control_phase_++;
-        return false;
-      }
+      return true;
     });
 }
 

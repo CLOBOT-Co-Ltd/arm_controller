@@ -49,9 +49,9 @@ class ArmControllerNode : public rclcpp::Node, public IArmController
 {
 private:
   std::atomic<bool> arm_emergency_stop_flag_ = false;
-  std::atomic<bool> arm_test_flag_ = false;
+  std::atomic<bool> rt_low_state_flag_ = false;
   std::atomic<bool> gesture_action_flag_ = false;
-  uint8_t gesture_type_ = 0;
+  std::atomic<uint8_t> gesture_type_ = 0;
 
   JOINT_INFOS arm_joint_infos_ = {0};
 

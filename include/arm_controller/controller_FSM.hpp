@@ -17,8 +17,11 @@ const double Pi_2 = 1.57079632;
 const double Pi_4 = 0.78539816;
 const double deg_30 = 0.523599;
 const double deg_20 = 0.349066;
+const double deg_10 = 0.174533;
 
-const uint8_t GESTURE_WAVE_HAND = 0;
+const uint8_t GESTURE_WAVE_HAND = 1;
+const uint8_t GESTURE_FOLLOW_ME = 2;
+const uint8_t GESTURE_ITS_ME = 3;
 
 class ControllerFSM
 {
@@ -48,19 +51,19 @@ private:
     2.0, 2.0, 1.5, 1.0, 1.0, 1.0, 1.0,
     2.0};
 
-
-  // std::array<double, JOINT_NUMBER> joint_kp_array_ = {10, 10, 10, 10, 10, 10, 10,
-  //   10, 10, 10, 10, 10, 10, 10,
-  //   10};
-  // std::array<double, JOINT_NUMBER> joint_kd_array_ = {10, 10, 10, 10, 10, 10, 10,
-  //   10, 10, 10, 10, 10, 10, 10,
-  //   10};
-
-  std::array<double, JOINT_NUMBER> init_pos_array_ = {0.f, 0.3, 0.f, 0, 0, 0, 0,
-    0.f, -0.3, 0.f, 0, 0, 0, 0,
+  std::array<double, JOINT_NUMBER> init_pos_array_ = {deg_10, 0.3, 0.f, 0, 0, 0, 0,
+    deg_10, -0.3, 0.f, 0, 0, 0, 0,
     0.f};
 
   std::array<double, JOINT_NUMBER> wave_hand_pos_array_ = {Pi_2 / 2, deg_20, 0, Pi_2 / 2, 0, 0, 0,
+    -Pi_2 / 2, -deg_20, 0, -Pi_2 / 2, -Pi_2, 0, 0,
+    0};
+
+  std::array<double, JOINT_NUMBER> follow_me_pos_array_ = {Pi_2 / 2, deg_20, 0, Pi_2 / 2, 0, 0, 0,
+    -deg_30, 0, deg_10, 0, Pi_2, 0, 0,
+    0};
+
+  std::array<double, JOINT_NUMBER> its_me_pos_array_ = {Pi_2 / 2, deg_20, 0, Pi_2 / 2, 0, 0, 0,
     -Pi_2 / 2, -deg_20, 0, -Pi_2 / 2, -Pi_2, 0, 0,
     0};
 
