@@ -27,7 +27,7 @@ find_package(arm_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 
 # Unitree SDK2 라이브러리
-set(UNITREE_SDK_DIR "$ENV{HOME}/workspaces/unitree_sdk2")
+set(UNITREE_SDK_DIR "$ENV{HOME}/unitree/unitree_sdk2")
 
 
 # uncomment the following section in order to fill in
