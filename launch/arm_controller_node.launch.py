@@ -30,7 +30,7 @@ def generate_launch_description():
             executable='arm_controller_node',
             name='arm_controller_node',
             parameters=[param_dir],
-            arguments=['--net_if', 'eno1'],
+            arguments=['--net_if', 'eth0'],
             output='screen',
             remappings=[
             ]

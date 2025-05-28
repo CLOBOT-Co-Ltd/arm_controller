@@ -3,8 +3,8 @@
     # control parameters
     controller_freq_hz: 50.0 # hz
 
-    max_angular_vel_rps: 0.5 # rad/s
-    max_angle_delta_rad: 0.01 # radian
+    max_angular_vel_rps: 0.75 # rad/s
+    max_angle_delta_rad: 0.015 # radian
     min_angle_delta_rad: 0.001 # radian
 
     angle_tolerance_rad: 0.0523599 # radian (3 deg)
@@ -13,4 +13,5 @@
     # control parameters
 
     wave_hand_sec: 5.0 # seconds
+    follow_me_sec: 5.0 # seconds
     stop_control_sec: 2.0 # seconds

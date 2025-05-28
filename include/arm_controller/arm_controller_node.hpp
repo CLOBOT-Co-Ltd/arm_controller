@@ -71,6 +71,7 @@ private:
   // control parameters
 
   double wave_hand_sec_ = 5.0; // 5 sec
+  double follow_me_sec_ = 5.0; // 5 sec
   double stop_control_sec_ = 2.0; // 2 sec
 
 

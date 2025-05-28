@@ -85,6 +85,9 @@ void ArmControllerNode::initialize(const char * networkInterface)
   this->declare_parameter("wave_hand_sec", 5.0);
   wave_hand_sec_ = this->get_parameter("wave_hand_sec").get_value<double>();
 
+  this->declare_parameter("follow_me_sec", 5.0);
+  follow_me_sec_ = this->get_parameter("follow_me_sec").get_value<double>();
+
   this->declare_parameter("stop_control_sec", 2.0);
   stop_control_sec_ = this->get_parameter("stop_control_sec").get_value<double>();
 
@@ -98,6 +101,7 @@ void ArmControllerNode::initialize(const char * networkInterface)
     angle_tolerance_rad_,
     control_weight_rate_,
     wave_hand_sec_,
+    follow_me_sec_,
     stop_control_sec_);
 
 

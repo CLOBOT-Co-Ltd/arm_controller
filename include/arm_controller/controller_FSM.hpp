@@ -29,10 +29,14 @@ private:
 // control parameters
 
   double wave_hand_sec_;
+  double follow_me_sec_;
   double stop_control_sec_;
 
   int wave_hand_phase_ = 0;
   int wave_hand_phase_limit_;
+
+  int follow_me_phase_ = 0;
+  int follow_me_phase_limit_;
 
   int stop_control_phase_ = 0;
   int stop_control_phase_limit_;
@@ -78,6 +82,7 @@ public:
     , double angle_tolerance_rad
     , double control_weight_rate
     , double wave_hand_sec
+    , double follow_me_sec
     , double stop_control_sec);
 
   // ~ControllerFSM();
