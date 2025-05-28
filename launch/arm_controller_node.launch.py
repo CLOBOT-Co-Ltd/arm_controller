@@ -29,11 +29,9 @@ def generate_launch_description():
             package='arm_controller',
             executable='arm_controller_node',
             name='arm_controller_node',
-
             parameters=[param_dir],
-
+            arguments=['--net_if', 'eno1'],
             output='screen',
-
             remappings=[
             ]
         )

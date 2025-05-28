@@ -1,9 +1,26 @@
 #ifndef ARM_CONTROLLER__DEFINITIONS_HPP_
 #define ARM_CONTROLLER__DEFINITIONS_HPP_
 
+#define SIGN(val) ((val >= 0.0) ? 1.0 : -1.0)
+
+
 #include <string>
 
-const int JOINT_NUMBER = 15; // 상부 조인트 모터 개수 (15개)
+const int JOINT_NUMBER = 15; // 상체 조인트 개수 (15개)
+
+const double Pi = 3.141592654;
+const double Pi_2 = 1.57079632;
+const double Pi_4 = 0.78539816;
+const double deg_30 = 0.523599;
+const double deg_20 = 0.349066;
+const double deg_10 = 0.174533;
+
+const uint8_t GESTURE_INIT_POS = 0;
+const uint8_t GESTURE_WAVE_HAND = 1;
+const uint8_t GESTURE_FOLLOW_ME = 2;
+const uint8_t GESTURE_ITS_ME = 3;
+const uint8_t GESTURE_INTRODUCE = 4;
+const uint8_t GESTURE_TALKING = 5;
 
 
 enum JointIndex

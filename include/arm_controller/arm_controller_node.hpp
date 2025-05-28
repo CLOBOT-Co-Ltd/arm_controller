@@ -67,8 +67,11 @@ private:
 
   double angle_tolerance_rad_; // 모터 각도 허용 오차 (rad)
 
-  double weight_rate_;
+  double control_weight_rate_;
   // control parameters
+
+  double wave_hand_sec_ = 5.0; // 5 sec
+  double stop_control_sec_ = 2.0; // 2 sec
 
 
   unitree::robot::ChannelPublisherPtr<unitree_hg::msg::dds_::LowCmd_>
@@ -80,7 +83,6 @@ private:
   rclcpp::Publisher<arm_interfaces::msg::JointInfoList>::SharedPtr pub_arm_joint_infos_;
 
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr sub_arm_emergency_stop_;
-  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr sub_arm_test_;
 
   std::shared_ptr<rclcpp_action::ServerGoalHandle<arm_interfaces::action::Gesture>>
   action_handler_gesture_;
@@ -104,9 +106,6 @@ private:
 // topic 콜백 함수
   void on_subscribed_arm_emergency_stop(
     const std_msgs::msg::Bool::SharedPtr arm_emergency_stop_msg);
-
-  void on_subscribed_arm_test(
-    const std_msgs::msg::Bool::SharedPtr arm_test_msg);
 
 // /gesture action 콜백 함수
   rclcpp_action::GoalResponse on_received_action_goal_gesture(
@@ -132,7 +131,7 @@ public:
     std::array<double, JOINT_NUMBER> q, std::array<double, JOINT_NUMBER> dq,
     std::array<double, JOINT_NUMBER> kp, std::array<double, JOINT_NUMBER> kd,
     std::array<double, JOINT_NUMBER> tau,
-    double weight = 1.0) override;
+    double control_weight = 1.0) override;
 
   bool is_all_topics_ready() override;
   void reset_topic_flags() override;

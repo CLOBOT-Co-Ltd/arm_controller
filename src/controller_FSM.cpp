@@ -23,7 +23,9 @@ ControllerFSM::ControllerFSM(
   double max_angle_delta_rad,
   double min_angle_delta_rad,
   double angle_tolerance_rad,
-  double weight_rate)
+  double control_weight_rate,
+  double wave_hand_sec,
+  double stop_control_sec)
 : arm_controller_node_(arm_controller_node),
   controller_freq_hz_(controller_freq_hz),
   controller_freq_sec_(1.0 / controller_freq_hz_),
@@ -31,7 +33,9 @@ ControllerFSM::ControllerFSM(
   max_angle_delta_rad_(max_angle_delta_rad),
   min_angle_delta_rad_(min_angle_delta_rad),
   angle_tolerance_rad_(angle_tolerance_rad),
-  weight_rate_(weight_rate)
+  control_weight_rate_(control_weight_rate),
+  wave_hand_sec_(wave_hand_sec),
+  stop_control_sec_(stop_control_sec)
 {
   initialize();
   initialize_FSM();
@@ -40,8 +44,8 @@ ControllerFSM::ControllerFSM(
 
 void ControllerFSM::initialize()
 {
-  wave_hand_phase_limit_ = 5 * controller_freq_hz_; // 5 sec
-  stop_control_phase_limit_ = 2 * controller_freq_hz_; // 2 sec
+  wave_hand_phase_limit_ = wave_hand_sec_ * controller_freq_hz_; // 5 sec
+  stop_control_phase_limit_ = stop_control_sec_ * controller_freq_hz_; // 2 sec
 }
 
 void ControllerFSM::initialize_FSM()
@@ -123,13 +127,6 @@ void ControllerFSM::initialize_FSM()
       // periodic action of state
       // std::cout << "1. waiting_topics_state periodic action" << std::endl;
 
-      // for test
-      current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
-
-      // for (int i = 0; i < JOINT_NUMBER; i++) {
-      //   std::cout << "Joint " << i << ": " << current_pos_array_[i] << std::endl;
-      // }
-
       return true;
     },
 
@@ -139,7 +136,6 @@ void ControllerFSM::initialize_FSM()
       // std::cout << "1. waiting_topics_state finish condition check" << std::endl;
 
       return arm_controller_node_->is_all_topics_ready();
-      // return true;
     });
 
   // 2. waiting_gesture_action_state
@@ -170,8 +166,7 @@ void ControllerFSM::initialize_FSM()
       // condition of state finish
       // std::cout << "2. waiting_gesture_action_state finish condition check" << std::endl;
 
-      // return arm_controller_node_->get_gesture_action_flag();
-      return true;
+      return arm_controller_node_->get_gesture_action_flag();
     });
 
   // 3_1. wave_hand_state_1
@@ -187,6 +182,7 @@ void ControllerFSM::initialize_FSM()
         std::cout << "Gesture action type: " << GESTURE_WAVE_HAND << std::endl;
         return true;
       } else {
+        std::cout << "Gesture action type is not GESTURE_WAVE_HAND" << std::endl;
         return false;
       }
     },
@@ -195,15 +191,10 @@ void ControllerFSM::initialize_FSM()
       // initial execution of state
       std::cout << "3_1. wave_hand_state_1 initialize" << std::endl;
 
-      current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
-      target_pos_array_ = current_pos_array_;
+      current_angle_array_ = arm_controller_node_->get_arm_joint_infos();
+      target_angle_array_ = current_angle_array_;
 
-      // for (int i = 0; i < JOINT_NUMBER; i++) {
-      //   std::cout << "Joint " << i << ": " << current_pos_array_[i] * 180 / Pi <<
-      //     std::endl;
-      // }
-
-      weight_ = 1.0;
+      control_weight_ = 1.0;
     },
 
     [&]() -> bool
@@ -212,22 +203,15 @@ void ControllerFSM::initialize_FSM()
       // std::cout << "3_1. wave_hand_state_1 periodic action" << std::endl;
 
       std::array<double, JOINT_NUMBER> joint_angles_diff;
-      double max_angle_diff;
+      double max_angle_diff = 0.0;
       double angle_delta_per_control;
 
       double angle_delta_limit = max_angular_vel_rps_ * controller_freq_sec_;
 
-      // double delta_weight = weight_rate_ * controller_freq_sec_;
-      // weight_ += delta_weight;
-      // weight_ = std::clamp(weight_, 0.0, 1.0);
-
-      current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
-
-
       angle_delta_limit = std::clamp(angle_delta_limit, 0.0, max_angle_delta_rad_);
 
       for (int i = 0; i < JOINT_NUMBER; i++) {
-        joint_angles_diff[i] = wave_hand_pos_array_[i] - current_pos_array_[i];
+        joint_angles_diff[i] = wave_hand_angle_array_[i] - current_angle_array_[i];
       }
 
       for (double d: joint_angles_diff) {
@@ -237,31 +221,20 @@ void ControllerFSM::initialize_FSM()
       for (int i = 0; i < JOINT_NUMBER; i++) {
         angle_delta_per_control = std::clamp(
           joint_angles_diff[i], -angle_delta_limit,
-          angle_delta_limit) *
-        std::fabs(joint_angles_diff[i] / max_angle_diff);
+          angle_delta_limit);
 
-        // angle_delta_per_control = (std::fabs(angle_delta_per_control) >= min_angle_delta_rad_) ?
-        // angle_delta_per_control :
-        // SIGN(angle_delta_per_control) * min_angle_delta_rad_;
+        if (max_angle_diff != 0.0) {
+          angle_delta_per_control *= std::fabs(joint_angles_diff[i] / max_angle_diff);
+        }
 
-        target_pos_array_[i] += angle_delta_per_control;
-
-        // std::cout << "Joint target" << i << ": " << target_pos_array_[i] << std::endl;
-        // std::cout << "wave pos " << i << ": " << wave_hand_pos_array_[i] * 180 / Pi <<
-        //   std::endl;
-
-        // std::cout << "current pos " << i << ": " << current_pos_array_[i] * 180 / Pi <<
-        //   std::endl;
-        // std::cout << "angle delta per control " << i << ": " <<
-        //   angle_delta_per_control * 180 / Pi <<
-        //   std::endl;
-        // std::cout << "target pos " << i << ": " << target_pos_array_[i] * 180 / Pi <<
-        //   std::endl;
+        target_angle_array_[i] += angle_delta_per_control;
       }
 
       arm_controller_node_->set_arm_motor_cmd(
-        target_pos_array_, std::array<double, JOINT_NUMBER>{0.0f}, joint_kp_array_,
-        joint_kd_array_, std::array<double, JOINT_NUMBER>{0.0f}, weight_);
+        target_angle_array_, std::array<double, JOINT_NUMBER>{0.0f},
+        joint_kp_array_, joint_kd_array_,
+        std::array<double, JOINT_NUMBER>{0.0f},
+        control_weight_);
 
 
       return true;
@@ -272,17 +245,18 @@ void ControllerFSM::initialize_FSM()
       // condition of state finish
       // std::cout << "3_1. wave_hand_state_1 finish condition check" << std::endl;
 
+      current_angle_array_ = arm_controller_node_->get_arm_joint_infos();
+
       bool ret = true;
 
-
       for (int i = 0; i < JOINT_NUMBER; i++) {
-        if (std::abs(current_pos_array_[i] - wave_hand_pos_array_[i]) > angle_tolerance_rad_) {
+        if (std::fabs(current_angle_array_[i] - wave_hand_angle_array_[i]) >=
+        angle_tolerance_rad_)
+        {
           ret = false;
           break;
         }
       }
-
-      ret = false;
 
       return ret;
     });
@@ -304,12 +278,12 @@ void ControllerFSM::initialize_FSM()
       // initial execution of state
       std::cout << "3_2. wave_hand_state_2 initialize" << std::endl;
 
-      current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
-      target_pos_array_ = current_pos_array_;
+      current_angle_array_ = arm_controller_node_->get_arm_joint_infos();
+      target_angle_array_ = current_angle_array_;
 
       wave_hand_phase_ = 0;
 
-      weight_ = 1.0;
+      control_weight_ = 1.0;
     },
 
     [&]() -> bool
@@ -322,33 +296,25 @@ void ControllerFSM::initialize_FSM()
 
       double angle_delta_limit = max_angular_vel_rps_ * controller_freq_sec_;
 
-      // double delta_weight = weight_rate_ * controller_freq_sec_;
-      // weight_ += delta_weight;
-      // weight_ = std::clamp(weight_, 0.0, 1.0);
-
-      current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
 
       angle_delta_limit = std::clamp(angle_delta_limit, 0.0, max_angle_delta_rad_);
 
-      wave_hand_pos_array_[RIGHT_SHOULDER_YAW] = deg_30 * std::sin(4 * Pi * phase);
+      wave_hand_angle_array_[RIGHT_SHOULDER_YAW] = deg_30 * std::sin(4 * Pi * phase);
 
 
       for (int i = 0; i < JOINT_NUMBER; i++) {
         angle_delta_per_control = std::clamp(
-          wave_hand_pos_array_[i] - current_pos_array_[i],
+          wave_hand_angle_array_[i] - current_angle_array_[i],
           -angle_delta_limit, angle_delta_limit);
 
-        // angle_delta_per_control = (std::fabs(angle_delta_per_control) >= min_angle_delta_rad_) ?
-        // angle_delta_per_control :
-        // SIGN(angle_delta_per_control) * min_angle_delta_rad_;
-
-        target_pos_array_[i] += angle_delta_per_control;
+        target_angle_array_[i] += angle_delta_per_control;
       }
 
       arm_controller_node_->set_arm_motor_cmd(
-        target_pos_array_, std::array<double, JOINT_NUMBER>{0.0f}, joint_kp_array_,
-        joint_kd_array_, std::array<double, JOINT_NUMBER>{0.0f}, weight_);
-
+        target_angle_array_, std::array<double, JOINT_NUMBER>{0.0f},
+        joint_kp_array_, joint_kd_array_,
+        std::array<double, JOINT_NUMBER>{0.0f},
+        control_weight_);
 
       return true;
     },
@@ -358,8 +324,11 @@ void ControllerFSM::initialize_FSM()
       // condition of state finish
       // std::cout << "3_2. wave_hand_state_2 finish condition check" << std::endl;
 
+      current_angle_array_ = arm_controller_node_->get_arm_joint_infos();
+
+
       if (wave_hand_phase_ >= wave_hand_phase_limit_) {
-        wave_hand_pos_array_[RIGHT_SHOULDER_YAW] = 0;
+        wave_hand_angle_array_[RIGHT_SHOULDER_YAW] = 0;
         return true;
       } else {
         wave_hand_phase_++;
@@ -384,10 +353,10 @@ void ControllerFSM::initialize_FSM()
       // initial execution of state
       std::cout << "3_3. wave_hand_state_3 initialize" << std::endl;
 
-      current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
-      target_pos_array_ = current_pos_array_;
+      current_angle_array_ = arm_controller_node_->get_arm_joint_infos();
+      target_angle_array_ = current_angle_array_;
 
-      weight_ = 1.0;
+      control_weight_ = 1.0;
     },
 
     [&]() -> bool
@@ -396,22 +365,15 @@ void ControllerFSM::initialize_FSM()
       // std::cout << "3_3. wave_hand_state_3 periodic action" << std::endl;
 
       std::array<double, JOINT_NUMBER> joint_angles_diff;
-      double max_angle_diff;
+      double max_angle_diff = 0.0;
       double angle_delta_per_control;
 
       double angle_delta_limit = max_angular_vel_rps_ * controller_freq_sec_;
 
-      // double delta_weight = weight_rate_ * controller_freq_sec_;
-      // weight_ += delta_weight;
-      // weight_ = std::clamp(weight_, 0.0, 1.0);
-
-      current_pos_array_ = arm_controller_node_->get_arm_joint_infos();
-
-
       angle_delta_limit = std::clamp(angle_delta_limit, 0.0, max_angle_delta_rad_);
 
       for (int i = 0; i < JOINT_NUMBER; i++) {
-        joint_angles_diff[i] = init_pos_array_[i] - current_pos_array_[i];
+        joint_angles_diff[i] = init_angle_array_[i] - current_angle_array_[i];
       }
 
       for (double d: joint_angles_diff) {
@@ -421,19 +383,20 @@ void ControllerFSM::initialize_FSM()
       for (int i = 0; i < JOINT_NUMBER; i++) {
         angle_delta_per_control = std::clamp(
           joint_angles_diff[i], -angle_delta_limit,
-          angle_delta_limit) *
-        std::fabs(joint_angles_diff[i] / max_angle_diff);
+          angle_delta_limit);
 
-        // angle_delta_per_control = (std::fabs(angle_delta_per_control) >= min_angle_delta_rad_) ?
-        // angle_delta_per_control :
-        // SIGN(angle_delta_per_control) * min_angle_delta_rad_;
+        if (max_angle_diff != 0.0) {
+          angle_delta_per_control *= std::fabs(joint_angles_diff[i] / max_angle_diff);
+        }
 
-        target_pos_array_[i] += angle_delta_per_control;
+        target_angle_array_[i] += angle_delta_per_control;
       }
 
       arm_controller_node_->set_arm_motor_cmd(
-        target_pos_array_, std::array<double, JOINT_NUMBER>{0.0f}, joint_kp_array_,
-        joint_kd_array_, std::array<double, JOINT_NUMBER>{0.0f}, weight_);
+        target_angle_array_, std::array<double, JOINT_NUMBER>{0.0f},
+        joint_kp_array_, joint_kd_array_,
+        std::array<double, JOINT_NUMBER>{0.0f},
+        control_weight_);
 
 
       return true;
@@ -444,11 +407,12 @@ void ControllerFSM::initialize_FSM()
       // condition of state finish
       // std::cout << "3_3. wave_hand_state_3 finish condition check" << std::endl;
 
+      current_angle_array_ = arm_controller_node_->get_arm_joint_infos();
+
       bool ret = true;
 
-
       for (int i = 0; i < JOINT_NUMBER; i++) {
-        if (std::abs(current_pos_array_[i] - init_pos_array_[i]) > angle_tolerance_rad_) {
+        if (std::fabs(current_angle_array_[i] - init_angle_array_[i]) >= angle_tolerance_rad_) {
           ret = false;
           break;
         }
@@ -478,7 +442,7 @@ void ControllerFSM::initialize_FSM()
       std::cout << "99. emergency_stop_state initialize" << std::endl;
 
       stop_control_phase_ = 0;
-      weight_ = 1.0;
+      control_weight_ = 1.0;
     },
 
     [&]() -> bool
@@ -486,14 +450,17 @@ void ControllerFSM::initialize_FSM()
       // periodic action of state
       // std::cout << "99. emergency_stop_state periodic action" << std::endl;
 
-      double delta_weight = weight_rate_ * controller_freq_sec_;
-      weight_ -= delta_weight;
-      weight_ = std::clamp(weight_, 0.0, 1.0);
+      double delta_control_weight = control_weight_rate_ * controller_freq_sec_;
+      control_weight_ -= delta_control_weight;
+      control_weight_ = std::clamp(control_weight_, 0.0, 1.0);
+
+      current_angle_array_ = arm_controller_node_->get_arm_joint_infos();
 
       arm_controller_node_->set_arm_motor_cmd(
-        std::array<double, JOINT_NUMBER>{0.0f}, std::array<double, JOINT_NUMBER>{0.0f},
-        std::array<double, JOINT_NUMBER>{0.0f}, std::array<double, JOINT_NUMBER>{0.0f},
-        std::array<double, JOINT_NUMBER>{0.0f}, weight_);
+        current_angle_array_, std::array<double, JOINT_NUMBER>{0.0f},
+        joint_kp_array_, joint_kd_array_,
+        std::array<double, JOINT_NUMBER>{0.0f},
+        control_weight_);
 
       return true;
     },
@@ -518,7 +485,7 @@ void ControllerFSM::initialize_FSM()
     [&]() -> bool
     {
       // condition of state entry
-      // std::cout << "100. finish_state condition check" << std::endl;
+      std::cout << "100. finish_state condition check" << std::endl;
       return true;
     },
     [&]()

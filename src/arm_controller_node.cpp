@@ -46,6 +46,7 @@ void ArmControllerNode::initialize(const char * networkInterface)
       &ArmControllerNode::on_dds_subscribed_rt_lowstate, this,
       std::placeholders::_1), 1);
 
+  // h1_2 각 joint 번호
   arm_joint_infos_.joint_number[LEFT_SHOULDER_PITCH] = 13;
   arm_joint_infos_.joint_number[LEFT_SHOULDER_ROLL] = 14;
   arm_joint_infos_.joint_number[LEFT_SHOULDER_YAW] = 15;
@@ -78,8 +79,14 @@ void ArmControllerNode::initialize(const char * networkInterface)
   this->declare_parameter("angle_tolerance_rad", 0.0523599); // 3 deg
   angle_tolerance_rad_ = this->get_parameter("angle_tolerance_rad").get_value<double>();
 
-  this->declare_parameter("weight_rate", 0.2);
-  weight_rate_ = this->get_parameter("weight_rate").get_value<double>();
+  this->declare_parameter("control_weight_rate", 0.2);
+  control_weight_rate_ = this->get_parameter("control_weight_rate").get_value<double>();
+
+  this->declare_parameter("wave_hand_sec", 5.0);
+  wave_hand_sec_ = this->get_parameter("wave_hand_sec").get_value<double>();
+
+  this->declare_parameter("stop_control_sec", 2.0);
+  stop_control_sec_ = this->get_parameter("stop_control_sec").get_value<double>();
 
 
   controller_FSM_ = std::make_shared<ControllerFSM>(
@@ -89,7 +96,9 @@ void ArmControllerNode::initialize(const char * networkInterface)
     max_angle_delta_rad_,
     min_angle_delta_rad_,
     angle_tolerance_rad_,
-    weight_rate_);
+    control_weight_rate_,
+    wave_hand_sec_,
+    stop_control_sec_);
 
 
   controller_FSM_timer_.SetInterval_ms((1 / controller_freq_hz_) * 1000); // 20 ms
@@ -102,10 +111,6 @@ void ArmControllerNode::initialize(const char * networkInterface)
   sub_arm_emergency_stop_ = create_subscription<std_msgs::msg::Bool>(
     "arm/emergency_stop", 10,
     std::bind(&ArmControllerNode::on_subscribed_arm_emergency_stop, this, std::placeholders::_1));
-
-  sub_arm_test_ = create_subscription<std_msgs::msg::Bool>(
-    "arm/test", 10,
-    std::bind(&ArmControllerNode::on_subscribed_arm_test, this, std::placeholders::_1));
 
   action_handler_gesture_ = nullptr;
 
@@ -138,13 +143,13 @@ bool ArmControllerNode::get_arm_emergency_stop()
 std::array<double, JOINT_NUMBER> ArmControllerNode::get_arm_joint_infos()
 {
   // RCLCPP_INFO(get_logger(), "get_arm_joint_infos() called");
-  std::array<double, JOINT_NUMBER> current_pos_array;
+  std::array<double, JOINT_NUMBER> current_angle_array;
 
   for (int i = 0; i < JOINT_NUMBER; i++) {
-    current_pos_array[i] = arm_joint_infos_.joint_angle_rad[i];
+    current_angle_array[i] = arm_joint_infos_.joint_angle_rad[i];
   }
 
-  return current_pos_array;
+  return current_angle_array;
 }
 
 bool ArmControllerNode::get_gesture_action_flag()
@@ -162,15 +167,15 @@ uint8_t ArmControllerNode::get_gesture_action_type()
 }
 
 void ArmControllerNode::set_arm_motor_cmd(
-  std::array<double, JOINT_NUMBER> q,
-  std::array<double, JOINT_NUMBER> dq, std::array<double, JOINT_NUMBER> kp,
-  std::array<double, JOINT_NUMBER> kd, std::array<double, JOINT_NUMBER> tau,
-  double weight)
+  std::array<double, JOINT_NUMBER> q, std::array<double, JOINT_NUMBER> dq,
+  std::array<double, JOINT_NUMBER> kp, std::array<double, JOINT_NUMBER> kd,
+  std::array<double, JOINT_NUMBER> tau,
+  double control_weight)
 {
   // RCLCPP_INFO(get_logger(), "set_arm_joint_angles() called");
 
   unitree_hg::msg::dds_::LowCmd_ arm_cmd_msg;
-  arm_cmd_msg.motor_cmd().at(27).q(weight);
+  arm_cmd_msg.motor_cmd().at(27).q(control_weight); // control on/off 모드 설정
 
   for (int i = 0; i < JOINT_NUMBER; i++) {
     arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).q(q[i]);
@@ -178,9 +183,6 @@ void ArmControllerNode::set_arm_motor_cmd(
     arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).kp(kp[i]);
     arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).kd(kd[i]);
     arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).tau(tau[i]);
-
-    // std::cout << "weight: " << weight << std::endl;
-    // std::cout << "joint " << i << ": " << q[i] * 180 / M_PI << std::endl;
   }
 
 
@@ -193,9 +195,9 @@ bool ArmControllerNode::is_all_topics_ready()
 
   bool ret = true;
 
-  ret &= arm_test_flag_;
+  ret &= rt_low_state_flag_;
 
-  arm_test_flag_ = false;
+  rt_low_state_flag_ = false;
 
   return ret;
 }
@@ -204,8 +206,8 @@ void ArmControllerNode::reset_topic_flags()
 {
   // RCLCPP_INFO(get_logger(), "reset_topic_flags() called");
 
-  arm_test_flag_ = false;
   arm_emergency_stop_flag_ = false;
+  rt_low_state_flag_ = false;
   gesture_action_flag_ = false;
 
   gesture_type_ = 0;
@@ -216,6 +218,8 @@ void ArmControllerNode::reset_topic_flags()
 // unitree dds 토픽 콜백 함수
 void ArmControllerNode::on_dds_subscribed_rt_lowstate(const void * rt_lowstate_msg)
 {
+  rt_low_state_flag_ = true;
+
   auto type_casting = (const unitree_hg::msg::dds_::LowState_ *) rt_lowstate_msg;
   unitree_hg::msg::dds_::LowState_ state_msg;
 
@@ -237,17 +241,6 @@ void ArmControllerNode::on_subscribed_arm_emergency_stop(
 
   arm_emergency_stop_flag_ = arm_emergency_stop_msg->data;
 }
-
-void ArmControllerNode::on_subscribed_arm_test(
-  const std_msgs::msg::Bool::SharedPtr arm_test_msg)
-{
-  RCLCPP_INFO(
-    get_logger(), "Subscribed /arm/test topic: %d",
-    arm_test_msg->data);
-
-  arm_test_flag_ = arm_test_msg->data;
-}
-
 
 rclcpp_action::GoalResponse ArmControllerNode::on_received_action_goal_gesture(
   const rclcpp_action::GoalUUID & uuid,

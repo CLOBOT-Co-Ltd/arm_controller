@@ -16,22 +16,25 @@
 #include "arm_controller/arm_controller_node.hpp"
 
 #include <memory>
+#include <string>
 
 #include <rclcpp/rclcpp.hpp>
 
 
 int main(int argc, char * argv[])
 {
-  // if (argc < 2) {
-  //   std::cout << "Usage: " << argv[0] << " networkInterface" << std::endl;
-  //   exit(-1);
-  // }
+  std::string net_if_str = argv[1];
+
+  if (net_if_str != "--net_if") {
+    std::cout << "Usage: " << argv[0] << " --net_if {Network Interface}" << std::endl;
+    exit(-1);
+  }
 
   rclcpp::init(argc, argv);
 
   rclcpp::executors::MultiThreadedExecutor executor;
 
-  auto node = std::make_shared<ArmControllerNode>("eno1");
+  auto node = std::make_shared<ArmControllerNode>(argv[2]);
 
   executor.add_node(node);
   executor.spin();

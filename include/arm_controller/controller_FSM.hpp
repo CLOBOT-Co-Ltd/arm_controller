@@ -1,8 +1,6 @@
 #ifndef ARM_CONTROLLER__CONTROLLER_FSM_HPP_
 #define ARM_CONTROLLER__CONTROLLER_FSM_HPP_
 
-#define SIGN(val) ((val >= 0.0) ? 1.0 : -1.0)
-
 
 #include "arm_controller/definitions.hpp"
 #include "arm_controller/iarm_controller.hpp"
@@ -11,17 +9,6 @@
 
 #include "clobot_platform_libs/finite_state_machine/machine.hpp"
 
-
-const double Pi = 3.141592654;
-const double Pi_2 = 1.57079632;
-const double Pi_4 = 0.78539816;
-const double deg_30 = 0.523599;
-const double deg_20 = 0.349066;
-const double deg_10 = 0.174533;
-
-const uint8_t GESTURE_WAVE_HAND = 1;
-const uint8_t GESTURE_FOLLOW_ME = 2;
-const uint8_t GESTURE_ITS_ME = 3;
 
 class ControllerFSM
 {
@@ -37,12 +24,22 @@ private:
 
   double angle_tolerance_rad_; // 모터 각도 허용 오차 (rad)
 
-  double weight_rate_;
-  double weight_ = 0.0;
+  double control_weight_rate_;
+  double control_weight_ = 0.0;
 // control parameters
 
-  std::array<double, JOINT_NUMBER> current_pos_array_ = {0};
-  std::array<double, JOINT_NUMBER> target_pos_array_ = {0};
+  double wave_hand_sec_;
+  double stop_control_sec_;
+
+  int wave_hand_phase_ = 0;
+  int wave_hand_phase_limit_;
+
+  int stop_control_phase_ = 0;
+  int stop_control_phase_limit_;
+
+
+  std::array<double, JOINT_NUMBER> current_angle_array_ = {0};
+  std::array<double, JOINT_NUMBER> target_angle_array_ = {0};
 
   std::array<double, JOINT_NUMBER> joint_kp_array_ = {120, 120, 80, 50, 50, 50, 50,
     120, 120, 80, 50, 50, 50, 50,
@@ -51,27 +48,21 @@ private:
     2.0, 2.0, 1.5, 1.0, 1.0, 1.0, 1.0,
     2.0};
 
-  std::array<double, JOINT_NUMBER> init_pos_array_ = {deg_10, 0.3, 0.f, 0, 0, 0, 0,
+  std::array<double, JOINT_NUMBER> init_angle_array_ = {deg_10, 0.3, 0.f, 0, 0, 0, 0,
     deg_10, -0.3, 0.f, 0, 0, 0, 0,
     0.f};
 
-  std::array<double, JOINT_NUMBER> wave_hand_pos_array_ = {Pi_2 / 2, deg_20, 0, Pi_2 / 2, 0, 0, 0,
+  std::array<double, JOINT_NUMBER> wave_hand_angle_array_ = {Pi_2 / 2, deg_20, 0, Pi_2 / 2, 0, 0, 0,
     -Pi_2 / 2, -deg_20, 0, -Pi_2 / 2, -Pi_2, 0, 0,
     0};
 
-  std::array<double, JOINT_NUMBER> follow_me_pos_array_ = {Pi_2 / 2, deg_20, 0, Pi_2 / 2, 0, 0, 0,
+  std::array<double, JOINT_NUMBER> follow_me_angle_array_ = {Pi_2 / 2, deg_20, 0, Pi_2 / 2, 0, 0, 0,
     -deg_30, 0, deg_10, 0, Pi_2, 0, 0,
     0};
 
-  std::array<double, JOINT_NUMBER> its_me_pos_array_ = {Pi_2 / 2, deg_20, 0, Pi_2 / 2, 0, 0, 0,
+  std::array<double, JOINT_NUMBER> its_me_angle_array_ = {Pi_2 / 2, deg_20, 0, Pi_2 / 2, 0, 0, 0,
     -Pi_2 / 2, -deg_20, 0, -Pi_2 / 2, -Pi_2, 0, 0,
     0};
-
-  int wave_hand_phase_ = 0;
-  int wave_hand_phase_limit_;
-
-  int stop_control_phase_ = 0;
-  int stop_control_phase_limit_;
 
 
   std::shared_ptr<IArmController> arm_controller_node_;
@@ -85,7 +76,9 @@ public:
     , double max_angle_delta_rad
     , double min_angle_delta_rad
     , double angle_tolerance_rad
-    , double weight_rate);
+    , double control_weight_rate
+    , double wave_hand_sec
+    , double stop_control_sec);
 
   // ~ControllerFSM();
 

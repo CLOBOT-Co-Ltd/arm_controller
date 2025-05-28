@@ -15,10 +15,10 @@ public:
   virtual uint8_t get_gesture_action_type() = 0;
 
   virtual void set_arm_motor_cmd(
-    std::array<double, JOINT_NUMBER> q,
-    std::array<double, JOINT_NUMBER> dq, std::array<double, JOINT_NUMBER> kp,
-    std::array<double, JOINT_NUMBER> kd, std::array<double, JOINT_NUMBER> tau,
-    double weight = 1.0) = 0;
+    std::array<double, JOINT_NUMBER> q, std::array<double, JOINT_NUMBER> dq,
+    std::array<double, JOINT_NUMBER> kp, std::array<double, JOINT_NUMBER> kd,
+    std::array<double, JOINT_NUMBER> tau,
+    double control_weight = 1.0) = 0;
 
   virtual bool is_all_topics_ready() = 0;
   virtual void reset_topic_flags() = 0;
