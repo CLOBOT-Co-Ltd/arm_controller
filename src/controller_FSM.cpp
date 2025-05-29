@@ -1342,7 +1342,7 @@ void ControllerFSM::initialize_FSM()
       double angle_delta_limit = max_angular_vel_rps_ * controller_freq_sec_;
 
       std::array<double, JOINT_NUMBER> current_talking_angle_array = current_angle_array_;
-      current_talking_angle_array[RIGHT_SHOULDER_PITCH] = -deg_20 * std::sin(2 * Pi * phase);
+      // current_talking_angle_array[RIGHT_SHOULDER_PITCH] = -deg_20 * std::sin(8 * Pi * phase);
 
       angle_delta_limit = std::clamp(angle_delta_limit, 0.0, max_angle_delta_rad_);
 
