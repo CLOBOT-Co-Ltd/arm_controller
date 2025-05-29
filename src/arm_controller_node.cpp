@@ -91,6 +91,12 @@ void ArmControllerNode::initialize(const char * networkInterface)
   this->declare_parameter("its_me_sec", 5.0);
   its_me_sec_ = this->get_parameter("its_me_sec").get_value<double>();
 
+  this->declare_parameter("introduce_sec", 5.0);
+  introduce_sec_ = this->get_parameter("introduce_sec").get_value<double>();
+
+  this->declare_parameter("talking_sec", 5.0);
+  talking_sec_ = this->get_parameter("talking_sec").get_value<double>();
+
   this->declare_parameter("stop_control_sec", 2.0);
   stop_control_sec_ = this->get_parameter("stop_control_sec").get_value<double>();
 
@@ -106,6 +112,8 @@ void ArmControllerNode::initialize(const char * networkInterface)
     wave_hand_sec_,
     follow_me_sec_,
     its_me_sec_,
+    introduce_sec_,
+    talking_sec_,
     stop_control_sec_);
 
 

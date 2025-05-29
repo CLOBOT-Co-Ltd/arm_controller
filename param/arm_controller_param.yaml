@@ -15,4 +15,6 @@
     wave_hand_sec: 5.0 # seconds
     follow_me_sec: 5.0 # seconds
     its_me_sec: 5.0 # seconds
+    introduce_sec: 5.0 # seconds
+    talking_sec: 5.0 # seconds
     stop_control_sec: 2.0 # seconds

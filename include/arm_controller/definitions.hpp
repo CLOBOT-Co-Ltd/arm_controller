@@ -11,6 +11,7 @@ const int JOINT_NUMBER = 15; // 상체 조인트 개수 (15개)
 const double Pi = 3.141592654;
 const double Pi_2 = 1.57079632;
 const double Pi_4 = 0.78539816;
+const double deg_60 = 1.047198;
 const double deg_30 = 0.523599;
 const double deg_20 = 0.349066;
 const double deg_15 = 0.261799;
