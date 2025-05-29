@@ -30,6 +30,7 @@ private:
 
   double wave_hand_sec_;
   double follow_me_sec_;
+  double its_me_sec_;
   double stop_control_sec_;
 
   int wave_hand_phase_ = 0;
@@ -37,6 +38,9 @@ private:
 
   int follow_me_phase_ = 0;
   int follow_me_phase_limit_;
+
+  int its_me_phase_ = 0;
+  int its_me_phase_limit_;
 
   int stop_control_phase_ = 0;
   int stop_control_phase_limit_;
@@ -83,6 +87,7 @@ public:
     , double control_weight_rate
     , double wave_hand_sec
     , double follow_me_sec
+    , double its_me_sec
     , double stop_control_sec);
 
   // ~ControllerFSM();
