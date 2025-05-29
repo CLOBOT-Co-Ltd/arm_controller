@@ -13,6 +13,7 @@ const double Pi_2 = 1.57079632;
 const double Pi_4 = 0.78539816;
 const double deg_30 = 0.523599;
 const double deg_20 = 0.349066;
+const double deg_15 = 0.261799;
 const double deg_10 = 0.174533;
 
 const uint8_t GESTURE_INIT_POS = 0;

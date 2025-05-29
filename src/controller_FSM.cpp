@@ -560,11 +560,7 @@ void ControllerFSM::initialize_FSM()
       double angle_delta_limit = max_angular_vel_rps_ * controller_freq_sec_;
 
       std::array<double, JOINT_NUMBER> current_follow_me_angle_array = current_angle_array_;
-
-      // 여기서부터 작업 !!! (follow me state)
-
-
-      current_follow_me_angle_array[RIGHT_SHOULDER_YAW] = deg_30 * std::sin(4 * Pi * phase);
+      current_follow_me_angle_array[RIGHT_ELBOW_PITCH] = -(deg_15 * std::sin(4 * Pi * (phase - 1/8)) + deg_15);
 
       angle_delta_limit = std::clamp(angle_delta_limit, 0.0, max_angle_delta_rad_);
 
