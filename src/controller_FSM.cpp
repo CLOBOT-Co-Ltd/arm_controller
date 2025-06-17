@@ -289,6 +289,8 @@ void ControllerFSM::initialize_FSM()
         control_weight_);
 
 
+      arm_controller_node_->action_gesture_feedback();
+
       return true;
     },
 
@@ -366,6 +368,9 @@ void ControllerFSM::initialize_FSM()
         joint_kp_array_, joint_kd_array_,
         std::array<double, JOINT_NUMBER>{0.0f},
         control_weight_);
+
+
+      arm_controller_node_->action_gesture_feedback();
 
       return true;
     },
@@ -448,6 +453,8 @@ void ControllerFSM::initialize_FSM()
         std::array<double, JOINT_NUMBER>{0.0f},
         control_weight_);
 
+
+      arm_controller_node_->action_gesture_feedback();
 
       return true;
     },
@@ -540,6 +547,8 @@ void ControllerFSM::initialize_FSM()
         control_weight_);
 
 
+      arm_controller_node_->action_gesture_feedback();
+
       return true;
     },
 
@@ -617,6 +626,9 @@ void ControllerFSM::initialize_FSM()
         joint_kp_array_, joint_kd_array_,
         std::array<double, JOINT_NUMBER>{0.0f},
         control_weight_);
+
+
+      arm_controller_node_->action_gesture_feedback();
 
       return true;
     },
@@ -698,6 +710,8 @@ void ControllerFSM::initialize_FSM()
         std::array<double, JOINT_NUMBER>{0.0f},
         control_weight_);
 
+
+      arm_controller_node_->action_gesture_feedback();
 
       return true;
     },
@@ -789,6 +803,8 @@ void ControllerFSM::initialize_FSM()
         control_weight_);
 
 
+      arm_controller_node_->action_gesture_feedback();
+
       return true;
     },
 
@@ -864,6 +880,9 @@ void ControllerFSM::initialize_FSM()
         joint_kp_array_, joint_kd_array_,
         std::array<double, JOINT_NUMBER>{0.0f},
         control_weight_);
+
+
+      arm_controller_node_->action_gesture_feedback();
 
       return true;
     },
@@ -945,6 +964,8 @@ void ControllerFSM::initialize_FSM()
         std::array<double, JOINT_NUMBER>{0.0f},
         control_weight_);
 
+
+      arm_controller_node_->action_gesture_feedback();
 
       return true;
     },
@@ -1036,6 +1057,8 @@ void ControllerFSM::initialize_FSM()
         control_weight_);
 
 
+      arm_controller_node_->action_gesture_feedback();
+
       return true;
     },
 
@@ -1111,6 +1134,9 @@ void ControllerFSM::initialize_FSM()
         joint_kp_array_, joint_kd_array_,
         std::array<double, JOINT_NUMBER>{0.0f},
         control_weight_);
+
+
+      arm_controller_node_->action_gesture_feedback();
 
       return true;
     },
@@ -1192,6 +1218,8 @@ void ControllerFSM::initialize_FSM()
         std::array<double, JOINT_NUMBER>{0.0f},
         control_weight_);
 
+
+      arm_controller_node_->action_gesture_feedback();
 
       return true;
     },
@@ -1283,6 +1311,8 @@ void ControllerFSM::initialize_FSM()
         control_weight_);
 
 
+      arm_controller_node_->action_gesture_feedback();
+
       return true;
     },
 
@@ -1359,6 +1389,9 @@ void ControllerFSM::initialize_FSM()
         joint_kp_array_, joint_kd_array_,
         std::array<double, JOINT_NUMBER>{0.0f},
         control_weight_);
+
+
+      arm_controller_node_->action_gesture_feedback();
 
       return true;
     },
@@ -1441,6 +1474,8 @@ void ControllerFSM::initialize_FSM()
         control_weight_);
 
 
+      arm_controller_node_->action_gesture_feedback();
+
       return true;
     },
 
@@ -1512,6 +1547,8 @@ void ControllerFSM::initialize_FSM()
       // std::cout << "99. emergency_stop_state finish condition check" << std::endl;
 
       if (stop_control_phase_ >= stop_control_phase_limit_) {
+        arm_controller_node_->action_gesture_result(ACTION_GESTURE_FAILURE);
+
         return true;
       } else {
         stop_control_phase_++;
@@ -1534,6 +1571,7 @@ void ControllerFSM::initialize_FSM()
       // initial execution of state
       std::cout << "100. finish_state initialize" << std::endl;
 
+      arm_controller_node_->action_gesture_result(ACTION_GESTURE_SUCCESS);
       arm_controller_node_->reset_topic_flags();
     },
 

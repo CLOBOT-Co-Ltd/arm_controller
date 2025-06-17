@@ -24,6 +24,9 @@ const uint8_t GESTURE_ITS_ME = 3;
 const uint8_t GESTURE_INTRODUCE = 4;
 const uint8_t GESTURE_TALKING = 5;
 
+const uint8_t ACTION_GESTURE_SUCCESS = 0;
+const uint8_t ACTION_GESTURE_FAILURE = 1;
+
 
 enum JointIndex
 {

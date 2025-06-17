@@ -137,6 +137,9 @@ public:
     std::array<double, JOINT_NUMBER> tau,
     double control_weight = 1.0) override;
 
+  void action_gesture_feedback() override;
+  void action_gesture_result(uint8_t result) override;
+
   bool is_all_topics_ready() override;
   void reset_topic_flags() override;
 };

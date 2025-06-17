@@ -20,6 +20,9 @@ public:
     std::array<double, JOINT_NUMBER> tau,
     double control_weight = 1.0) = 0;
 
+  virtual void action_gesture_feedback() = 0;
+  virtual void action_gesture_result(uint8_t result) = 0;
+
   virtual bool is_all_topics_ready() = 0;
   virtual void reset_topic_flags() = 0;
 };

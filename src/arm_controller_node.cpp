@@ -205,6 +205,38 @@ void ArmControllerNode::set_arm_motor_cmd(
   arm_sdk_publisher_->Write(arm_cmd_msg);
 }
 
+void ArmControllerNode::action_gesture_feedback()
+{
+  // RCLCPP_INFO(get_logger(), "action_gesture_feedback() called");
+
+  if (action_handler_gesture_) {
+    auto feedback = std::make_shared<arm_interfaces::action::Gesture::Feedback>();
+
+    feedback->current_joint_angle.resize(JOINT_NUMBER);
+
+    for (int i = 0; i < JOINT_NUMBER; i++) {
+      feedback->current_joint_angle[i].joint_idx.number = arm_joint_infos_.joint_number[i];
+      feedback->current_joint_angle[i].angle_rad = arm_joint_infos_.joint_angle_rad[i];
+    }
+
+    action_handler_gesture_->publish_feedback(feedback);
+  }
+}
+
+void ArmControllerNode::action_gesture_result(uint8_t result)
+{
+  // RCLCPP_INFO(get_logger(), "action_gesture_result() called");
+
+  if (action_handler_gesture_) {
+    auto result_msg = std::make_shared<arm_interfaces::action::Gesture::Result>();
+    result_msg->result = result;
+
+    action_handler_gesture_->succeed(result_msg);
+    action_handler_gesture_ = nullptr;
+    gesture_action_flag_ = false;
+  }
+}
+
 bool ArmControllerNode::is_all_topics_ready()
 {
   // RCLCPP_INFO(get_logger(), "is_all_topics_ready() called");
