@@ -282,6 +282,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -367,6 +372,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -455,6 +465,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -552,6 +567,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -637,6 +657,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -724,6 +749,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -820,6 +850,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -903,6 +938,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -990,6 +1030,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -1086,6 +1131,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -1169,6 +1219,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -1256,6 +1311,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -1352,6 +1412,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -1436,6 +1501,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -1523,6 +1593,11 @@ void ControllerFSM::initialize_FSM()
         target_angle_array_[i] += angle_delta_per_control;
 
         if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          std::cout << "Emergency stop: target angle is too far from current angle. (5 도 이상 오차)" <<
+            std::endl;
+
+          emergency_stop_flag_ = true;
+
           target_angle_array_[i] = current_angle_array_[i];
         }
       }
@@ -1566,7 +1641,7 @@ void ControllerFSM::initialize_FSM()
     {
       // condition of state entry
       // std::cout << "99. emergency_stop_state condition check" << std::endl;
-      if (arm_controller_node_->get_arm_emergency_stop()) {
+      if (arm_controller_node_->get_arm_emergency_stop() || emergency_stop_flag_) {
         return true;
       } else {
         return false;
@@ -1633,6 +1708,7 @@ void ControllerFSM::initialize_FSM()
 
       arm_controller_node_->action_gesture_result(ACTION_GESTURE_SUCCESS);
       arm_controller_node_->reset_topic_flags();
+      emergency_stop_flag_ = false;
     },
 
     [&]() -> bool

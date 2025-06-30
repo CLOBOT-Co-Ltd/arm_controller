@@ -28,6 +28,8 @@ private:
   double control_weight_ = 0.0;
 // control parameters
 
+  bool emergency_stop_flag_ = false;
+
   double wave_hand_sec_;
   double follow_me_sec_;
   double its_me_sec_;

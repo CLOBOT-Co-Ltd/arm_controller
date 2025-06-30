@@ -63,6 +63,38 @@ void ArmControllerNode::initialize(const char * networkInterface)
   arm_joint_infos_.joint_number[RIGHT_WRIST_YAW] = 26;
   arm_joint_infos_.joint_number[WAIST_YAW] = 12;
 
+  arm_joint_limits_.min_angle_rad[LEFT_SHOULDER_PITCH] = -3.14; // -180 deg
+  arm_joint_limits_.min_angle_rad[LEFT_SHOULDER_ROLL] = -0.38;  // -22 deg
+  arm_joint_limits_.min_angle_rad[LEFT_SHOULDER_YAW] = -3.01; // -172 deg
+  arm_joint_limits_.min_angle_rad[LEFT_ELBOW_PITCH] = -2.53; // -145 deg
+  arm_joint_limits_.min_angle_rad[LEFT_ELBOW_ROLL] = -2.967; // -170 deg
+  arm_joint_limits_.min_angle_rad[LEFT_WRIST_PITCH] = -0.471; // -27 deg
+  arm_joint_limits_.min_angle_rad[LEFT_WRIST_YAW] = --1.012; // -58 deg
+  arm_joint_limits_.min_angle_rad[RIGHT_SHOULDER_PITCH] = -1.57; // -90 deg
+  arm_joint_limits_.min_angle_rad[RIGHT_SHOULDER_ROLL] = -3.4; // -195 deg
+  arm_joint_limits_.min_angle_rad[RIGHT_SHOULDER_YAW] = -2.66; // -152 deg
+  arm_joint_limits_.min_angle_rad[RIGHT_ELBOW_PITCH] = -1.6; // -91 deg
+  arm_joint_limits_.min_angle_rad[RIGHT_ELBOW_ROLL] = -2.967; // -170 deg
+  arm_joint_limits_.min_angle_rad[RIGHT_WRIST_PITCH] = -0.471; // -27 deg
+  arm_joint_limits_.min_angle_rad[RIGHT_WRIST_YAW] = -1.012; // -58 deg
+  arm_joint_limits_.min_angle_rad[WAIST_YAW] = -2.35; // -135 deg
+
+  arm_joint_limits_.max_angle_rad[LEFT_SHOULDER_PITCH] = 1.57; // 90 deg
+  arm_joint_limits_.max_angle_rad[LEFT_SHOULDER_ROLL] = 3.4; // 195 deg
+  arm_joint_limits_.max_angle_rad[LEFT_SHOULDER_YAW] = 2.66; // 152 deg
+  arm_joint_limits_.max_angle_rad[LEFT_ELBOW_PITCH] = 1.6; // 91 deg
+  arm_joint_limits_.max_angle_rad[LEFT_ELBOW_ROLL] = 2.967; // 170 deg
+  arm_joint_limits_.max_angle_rad[LEFT_WRIST_PITCH] = 0.349; // 20 deg
+  arm_joint_limits_.max_angle_rad[LEFT_WRIST_YAW] = 1.012; // 58 deg
+  arm_joint_limits_.max_angle_rad[RIGHT_SHOULDER_PITCH] = 3.14; // 180 deg
+  arm_joint_limits_.max_angle_rad[RIGHT_SHOULDER_ROLL] = 0.38; // 22 deg
+  arm_joint_limits_.max_angle_rad[RIGHT_SHOULDER_YAW] = 3.01; // 172 deg
+  arm_joint_limits_.max_angle_rad[RIGHT_ELBOW_PITCH] = 2.53; // 145 deg
+  arm_joint_limits_.max_angle_rad[RIGHT_ELBOW_ROLL] = 2.967; // 170 deg
+  arm_joint_limits_.max_angle_rad[RIGHT_WRIST_PITCH] = 0.349; // 20 deg
+  arm_joint_limits_.max_angle_rad[RIGHT_WRIST_YAW] = 1.012; // 58 deg
+  arm_joint_limits_.max_angle_rad[WAIST_YAW] = 2.35; // 135 deg
+
 
   this->declare_parameter("controller_freq_hz", 50.0);
   controller_freq_hz_ = this->get_parameter("controller_freq_hz").get_value<double>();
@@ -191,10 +223,14 @@ void ArmControllerNode::set_arm_motor_cmd(
   // RCLCPP_INFO(get_logger(), "set_arm_joint_angles() called");
 
   unitree_hg::msg::dds_::LowCmd_ arm_cmd_msg;
+  double target_q;
   arm_cmd_msg.motor_cmd().at(27).q(control_weight); // control on/off 모드 설정
 
   for (int i = 0; i < JOINT_NUMBER; i++) {
-    arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).q(q[i]);
+    target_q = std::max(q[i], arm_joint_limits_.min_angle_rad[i]);
+    target_q = std::min(target_q, arm_joint_limits_.max_angle_rad[i]);
+
+    arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).q(target_q);
     arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).dq(dq[i]);
     arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).kp(kp[i]);
     arm_cmd_msg.motor_cmd().at(arm_joint_infos_.joint_number[i]).kd(kd[i]);

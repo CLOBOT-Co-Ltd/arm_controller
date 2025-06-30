@@ -54,6 +54,7 @@ private:
   std::atomic<uint8_t> gesture_type_ = 0;
 
   JOINT_INFOS arm_joint_infos_ = {0};
+  JOINT_LIMITS arm_joint_limits_ = {0};
 
   std::shared_ptr<ControllerFSM> controller_FSM_;
   clobot_platform_libs::thread::Timer controller_FSM_timer_; // 20 ms
