@@ -27,7 +27,7 @@ find_package(arm_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 
 # Unitree SDK2 라이브러리
-set(UNITREE_SDK_DIR "$ENV{HOME}/unitree_sdk2")
+set(UNITREE_SDK_DIR "$ENV{HOME}/workspaces/unitree_sdk2")
 
 
 # uncomment the following section in order to fill in
@@ -53,13 +53,13 @@ include_directories(
   ${UNITREE_SDK_DIR}/include/unitree/robot/channel
   ${UNITREE_SDK_DIR}/thirdparty/include
   ${UNITREE_SDK_DIR}/thirdparty/include/ddscxx
-  $ENV{HOME}/unitree_ros2/cyclonedds_ws/install/include
+  $ENV{HOME}/workspaces/unitree_ros2/cyclonedds_ws/install/include
 )
 
 link_directories(
   ${UNITREE_SDK_DIR}/lib/aarch64
   ${UNITREE_SDK_DIR}/thirdparty/ddsc/lib
-  $ENV{HOME}/unitree_ros2/cyclonedds_ws/install/lib
+  $ENV{HOME}/workspaces/unitree_ros2/cyclonedds_ws/install/lib
 )
 
 target_link_libraries(arm_controller_node

@@ -280,6 +280,10 @@ void ControllerFSM::initialize_FSM()
         }
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -361,6 +365,10 @@ void ControllerFSM::initialize_FSM()
           -angle_delta_limit, angle_delta_limit);
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -445,6 +453,10 @@ void ControllerFSM::initialize_FSM()
         }
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -538,6 +550,10 @@ void ControllerFSM::initialize_FSM()
         }
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -619,6 +635,10 @@ void ControllerFSM::initialize_FSM()
           -angle_delta_limit, angle_delta_limit);
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -702,6 +722,10 @@ void ControllerFSM::initialize_FSM()
         }
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -794,6 +818,10 @@ void ControllerFSM::initialize_FSM()
         }
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -873,6 +901,10 @@ void ControllerFSM::initialize_FSM()
           -angle_delta_limit, angle_delta_limit);
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -956,6 +988,10 @@ void ControllerFSM::initialize_FSM()
         }
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -1048,6 +1084,10 @@ void ControllerFSM::initialize_FSM()
         }
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -1127,6 +1167,10 @@ void ControllerFSM::initialize_FSM()
           -angle_delta_limit, angle_delta_limit);
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -1210,6 +1254,10 @@ void ControllerFSM::initialize_FSM()
         }
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -1302,6 +1350,10 @@ void ControllerFSM::initialize_FSM()
         }
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -1382,6 +1434,10 @@ void ControllerFSM::initialize_FSM()
           -angle_delta_limit, angle_delta_limit);
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
@@ -1465,6 +1521,10 @@ void ControllerFSM::initialize_FSM()
         }
 
         target_angle_array_[i] += angle_delta_per_control;
+
+        if (std::fabs(target_angle_array_[i] - current_angle_array_[i]) >= 0.087) { // 5 degrees
+          target_angle_array_[i] = current_angle_array_[i];
+        }
       }
 
       arm_controller_node_->set_arm_motor_cmd(
