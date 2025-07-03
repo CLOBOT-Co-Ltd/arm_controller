@@ -69,7 +69,7 @@ void ArmControllerNode::initialize(const char * networkInterface)
   arm_joint_limits_.min_angle_rad[LEFT_ELBOW_PITCH] = -2.53; // -145 deg
   arm_joint_limits_.min_angle_rad[LEFT_ELBOW_ROLL] = -2.967; // -170 deg
   arm_joint_limits_.min_angle_rad[LEFT_WRIST_PITCH] = -0.471; // -27 deg
-  arm_joint_limits_.min_angle_rad[LEFT_WRIST_YAW] = --1.012; // -58 deg
+  arm_joint_limits_.min_angle_rad[LEFT_WRIST_YAW] = -1.012; // -58 deg
   arm_joint_limits_.min_angle_rad[RIGHT_SHOULDER_PITCH] = -1.57; // -90 deg
   arm_joint_limits_.min_angle_rad[RIGHT_SHOULDER_ROLL] = -3.4; // -195 deg
   arm_joint_limits_.min_angle_rad[RIGHT_SHOULDER_YAW] = -2.66; // -152 deg
