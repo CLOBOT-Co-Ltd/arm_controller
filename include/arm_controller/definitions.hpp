@@ -69,7 +69,7 @@ struct JOINT_LIMITS
 
   double min_angle_rad[15];
   double max_angle_rad[15];
-}
+};
 
 
 #endif // ARM_CONTROLLER__DEFINITIONS_HPP_
